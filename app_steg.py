@@ -1,4 +1,15 @@
 import os
+import hashlib
+import time
+import img_steg
+
+
+def md5(fname):
+    hash_md5 = hashlib.md5()
+    with open(fname, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
 
 from flask import Flask, request, render_template, send_from_directory
 
@@ -8,7 +19,7 @@ APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 @app.route("/")
 def index():
-    return render_template("upload.html")
+    return render_template("upload_steg.html")
 
 
 @app.route("/upload", methods=["POST"])
@@ -21,13 +32,15 @@ def upload():
         print("folder exist")
     '''
     target = os.path.join(APP_ROOT, 'buffer/{}'.format(folder_name))
-    print(target)
+    #print(target)
     if not os.path.isdir(target):
         os.mkdir(target)
-    print(request.files.getlist("file"))
+    #print(request.files.getlist("file"))
+    print("[info] MD5 hash as submitted by client =",request.form["md5hash"])
+
     for upload in request.files.getlist("file"):
-        print(upload)
-        print("{} is the file name".format(upload.filename))
+        #print(upload)
+        #print("{} is the file name".format(upload.filename))
         filename = upload.filename
         # This is to verify files are supported
         ext = os.path.splitext(filename)[1]
@@ -36,11 +49,29 @@ def upload():
         else:
             render_template("Error.html", message="Files uploaded are not supported...")
         destination = "/".join([target, filename])
-        print("Accept incoming file:", filename)
-        print("Save it to:", destination)
+        print("Accept incoming file:"+filename+" and storing in buffer")
         upload.save(destination)
-        #showimage(destination)
 
+        md5_inc=md5(destination)
+        print("[info] Incoming image hash value = "+md5_inc)
+
+
+
+
+        if(md5_inc==request.form["md5hash"]):
+            print("[info] Hash matches!")
+        else:
+            print("[info] Hash doesn't match deleting the file now")
+
+
+            img_steg.input_image_path = destination
+            img_steg.steg_image_path = img_steg.input_image_path
+            img_steg.output_file_path = './buffer/malicious.txt'
+
+            print(img_steg.recover_data())
+
+            time.sleep(3)
+            os.remove(destination)
 
     # return send_from_directory("images", filename, as_attachment=True), image_name=filename
     return render_template("complete.html")

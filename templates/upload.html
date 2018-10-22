@@ -10,9 +10,16 @@
 
     <strong>Files:</strong><br>
     <input id="file-picker" type="file" name="file" accept="image/*" multiple>
+    <div id="hash"></div>
     <div id="msg"></div>
     <input type="submit" value="Upload!" id="upload-button">
 </form>
+
+
+
+<div id="holder"></div>
+
+
 </body>
 <script>
 
@@ -36,9 +43,40 @@
             }
 
         }
+        var hash="231";
+        $("#hash").text(hash);
 
 
     } );
 
 </script>
+
+<script>
+    var holder = document.getElementById('holder');
+
+    holder.ondragover = function() {
+      return false;
+    };
+
+    holder.ondragend = function() {
+      return false;
+    };
+
+    holder.ondrop = function(event) {
+      event.preventDefault();
+
+      var file = event.dataTransfer.files[0];
+      var reader = new FileReader();
+
+      reader.onload = function(event) {
+        var binary = event.target.result;
+        var md5 = CryptoJS.MD5(binary).toString();
+        console.log(md5);
+      };
+
+      reader.readAsBinaryString(file);
+    };
+
+</script>
+
 </html>

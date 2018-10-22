@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Upload</title>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/q.js/1.4.1/q.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/2.0.2/spark-md5.min.js"></script>
+
+ <script type="text/javascript">
+function calculateMD5Hash(file, bufferSize) {
+  var def = Q.defer();
+
+  var fileReader = new FileReader();
+  var fileSlicer = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
+  var hashAlgorithm = new SparkMD5();
+  var totalParts = Math.ceil(file.size / bufferSize);
+  var currentPart = 0;
+  var startTime = new Date().getTime();
+
+  fileReader.onload = function(e) {
+    currentPart += 1;
+
+    def.notify({
+      currentPart: currentPart,
+      totalParts: totalParts
+    });
+
+    var buffer = e.target.result;
+    hashAlgorithm.appendBinary(buffer);
+
+    if (currentPart < totalParts) {
+      processNextPart();
+      return;
+    }
+
+    def.resolve({
+      hashResult: hashAlgorithm.end(),
+      duration: new Date().getTime() - startTime
+    });
+  };
+
+  fileReader.onerror = function(e) {
+    def.reject(e);
+  };
+
+  function processNextPart() {
+    var start = currentPart * bufferSize;
+    var end = Math.min(start + bufferSize, file.size);
+    fileReader.readAsBinaryString(fileSlicer.call(file, start, end));
+  }
+
+  processNextPart();
+  return def.promise;
+}
+
+function calculate() {
+
+  var input = document.getElementById('file-picker');
+  if (!input.files.length) {
+    return;
+  }
+
+  var file = input.files[0];
+  var bufferSize = Math.pow(1024, 2) * 10; // 10MB
+
+  calculateMD5Hash(file, bufferSize).then(
+    function(result) {
+      // Success
+      console.log(result);
+      $("#md5_hash").val(result.hashResult);
+    },
+    function(err) {
+      // There was an error,
+    },
+    function(progress) {
+      // We get notified of the progress as it is executed
+      console.log(progress.currentPart, 'of', progress.totalParts, 'Total bytes:', progress.currentPart * bufferSize, 'of', progress.totalParts * bufferSize);
+      
+    });
+}
+  </script>
+
+
+
+</head>
+<body>
+
+<form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+
+    <strong>Files:</strong><br>
+    <input id="file-picker" type="file" name="file" accept="image/*" multiple>
+    <div id="hash"></div>
+    <div id="msg"></div>
+
+    <input type="text" name="md5hash" id="md5_hash" value="waiting">
+
+    <input type="button" onclick="calculate();" value="Calculate" class="btn primary" />
+    <input type="submit" value="Upload!" id="upload-button">
+</form>
+
+<div id="holder"></div>
+
+
+
+</body>
+<script>
+
+    $("#file-picker").change(function(){
+
+        var input = document.getElementById('file-picker');
+
+        for (var i=0; i<input.files.length; i++)
+        {
+        //koala.jpg, koala.JPG substring(index) lastIndexOf('a') koala.1.jpg
+            var ext= input.files[i].name.substring(input.files[i].name.lastIndexOf('.')+1).toLowerCase()
+
+            if ((ext == 'jpg') || (ext == 'png'))
+            {
+                $("#msg").text("Files are supported")
+            }
+            else
+            {
+                $("#msg").text("Files are NOT supported")
+                document.getElementById("file-picker").value ="";
+            }
+
+        }
+        var hash="231";
+        $("#hash").text(hash);
+        $("#md5_hash").text(hash);
+
+
+
+    } );
+
+</script>
+
+<script>
+    var holder = document.getElementById('holder');
+
+    holder.ondragover = function() {
+      return false;
+    };
+
+    holder.ondragend = function() {
+      return false;
+    };
+
+    holder.ondrop = function(event) {
+      event.preventDefault();
+
+      var file = event.dataTransfer.files[0];
+      var reader = new FileReader();
+
+      reader.onload = function(event) {
+        var binary = event.target.result;
+        var md5 = CryptoJS.MD5(binary).toString();
+        console.log(md5);
+      };
+
+      reader.readAsBinaryString(file);
+    };
+
+</script>
+
+</html>
