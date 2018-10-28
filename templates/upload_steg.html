@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Upload</title>
+<title>Upload_STEG</title>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/q.js/1.4.1/q.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/2.0.2/spark-md5.min.js"></script>
@@ -92,7 +92,7 @@ function calculate() {
     <div id="hash"></div>
     <div id="msg"></div>
 
-    <input type="text" name="md5hash" id="md5_hash" value="waiting">
+    <input size="40" type="text" name="md5hash" id="md5_hash" value="waiting">
 
     <input type="button" onclick="calculate();" value="Calculate" class="btn primary" />
     <input type="submit" value="Upload!" id="upload-button">
@@ -125,9 +125,9 @@ function calculate() {
             }
 
         }
-        var hash="231";
-        $("#hash").text(hash);
-        $("#md5_hash").text(hash);
+        //var hash="231";
+        //$("#hash").text(hash);
+        //$("#md5_hash").text(hash);
 
 
 

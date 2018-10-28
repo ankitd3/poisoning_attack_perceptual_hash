@@ -59,5 +59,5 @@ def get_gallery():
 
 if __name__ == "__main__":
     #app.run(port=4555, debug=True)
-    app.run(host='192.168.29.85',port=4555,debug=True)
+    app.run(host='192.168.27.35',port=4555,debug=True)
 

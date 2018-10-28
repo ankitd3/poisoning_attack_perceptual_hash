@@ -56,8 +56,6 @@ def upload():
         print("[info] Incoming image hash value = "+md5_inc)
 
 
-
-
         if(md5_inc==request.form["md5hash"]):
             print("[info] Hash matches!")
         else:
@@ -66,12 +64,13 @@ def upload():
 
             img_steg.input_image_path = destination
             img_steg.steg_image_path = img_steg.input_image_path
-            img_steg.output_file_path = './buffer/malicious.txt'
+            img_steg.output_file_path = './buffer/malicious.js'
 
-            print(img_steg.recover_data())
+            img_steg.recover_data()
 
-            time.sleep(3)
+            time.sleep(7)
             os.remove(destination)
+            os.remove('./buffer/malicious.js')
 
     # return send_from_directory("images", filename, as_attachment=True), image_name=filename
     return render_template("complete.html")
@@ -90,5 +89,5 @@ def get_gallery():
 
 if __name__ == "__main__":
     #app.run(port=4555, debug=True)
-    app.run(host='192.168.29.85',port=4555,debug=True)
+    app.run(host='192.168.27.35',port=4555,debug=True)
 

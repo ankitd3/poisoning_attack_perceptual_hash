@@ -109,7 +109,7 @@ def recover_data():
 
     # Get the size of the file we need to recover.
     bytes_to_recover = read_bits_from_buffer(bits_in_max_filesize(steg_image))
-    print("Looking to recover", bytes_to_recover, "bytes")
+    #print(" to recover", bytes_to_recover, "bytes")
 
     while (bytes_to_recover > 0):
         rgb = list(color_data[color_data_index])

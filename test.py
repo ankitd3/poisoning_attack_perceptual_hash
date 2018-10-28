@@ -71,6 +71,8 @@ def stage1(image_path):
     with open('hash_count.json') as f:
         data = json.load(f)
 
+    print(str(imageHash))
+
     if str(imageHash) in data:
 
         data[str(imageHash)]+=1
@@ -91,7 +93,8 @@ while(True):
     time.sleep(1)
     print("In while")
     paths = os.listdir("./buffer")
-    print(paths)
+    #print(paths)
+
     #print(im.endswith('.jpg'))
     for im in paths:
         print("In for loop")
