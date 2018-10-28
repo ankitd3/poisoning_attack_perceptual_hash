@@ -10,7 +10,7 @@ We use the message authentication mechanism incorporating the use of MD5 hash wh
 A system that allows users to submit photos to a database of images to ban. 
 A human reviews the image to ensure it is an image that deserves banning (and that the image is say, not the Coca-Cola logo). If approved, this hash gets added to the database and is checked against whenever a new image is uploaded. If this new image’s hash collides with the banned hash, the image is prevented from being uploaded.
 
-![Block](https://i.imgur.com/7HcvZQ3.png)
+![Block](https://i.imgur.com/7HcvZQ3.png?1)
 
 ## Usage
 
